@@ -11,12 +11,16 @@ class Grafo:
         if not self.checarAresta(verticeX, verticeY):
             if verticeX == verticeY:
                 self.lacos['{}:{}'.format(verticeX, verticeY)] = True
-                self.graus += 3
+                self.grafo[verticeX, verticeY] = 1
+                self.grafo[verticeY, verticeX] = 1
+                print("Laço {}:{} criado!".format(verticeX, verticeY))
+                self.graus += 2
             else:
-                self.grafo[verticeX,verticeY] = 1
-                self.grafo[verticeY,verticeX] = 1
+                self.grafo[verticeX, verticeY] = 1
+                self.grafo[verticeY, verticeX] = 1
                 self.graus += 2
                 print("Aresta {}:{} criada!".format(verticeX, verticeY))
+
             return True
         else:
             return False
@@ -25,7 +29,7 @@ class Grafo:
         if self.checarAresta(verticeX, verticeY):
             if verticeX == verticeY:
                 del self.lacos['{}:{}'.format(verticeX, verticeY)]
-                self.graus -= 3
+                self.graus -= 2
             else:
                 self.grafo[verticeX,verticeY] = 0
                 self.grafo[verticeY,verticeX] = 0
@@ -76,20 +80,83 @@ class Grafo:
                     copiaGrafo[x][y] = 0
         print(copiaGrafo)
 
+    def isEuleriano(self):
+        quantidadeImpares = 0
+        for x in range(len(self.grafo)):
+            verticesGrau = 0
+            for y in range(len(self.grafo[x])):
+                if self.grafo[x][y] != 0:
+                    verticesGrau+=1
+                    if x == y:
+                        verticesGrau+=1
+            if verticesGrau % 2 != 0:
+                quantidadeImpares+1
+        if quantidadeImpares == 2 or quantidadeImpares == 0:
+            print("Essa grafo é Euleriano.")
+            return True
+        else:
+            print("Essa grafo nāo é Euleriano.")
+            return False
+
+    def quantidadeVerticesDesconexo(self):
+        resultado = 0
+        for x in range(len(self.grafo)):
+            verticesGrau = 0
+            for y in range(len(self.grafo[x])):
+                if self.grafo[x][y] != 0:
+                    verticesGrau += 1
+                    if x == y:
+                        verticesGrau += 1
+            if verticesGrau < 1:
+                resultado += 1
+        print("Vertices Desconexos: {}".format(resultado))
+        return resultado
+
+    def numeroCromatico(self):
+        contadorAux = 0
+        contadorNumeroCromatico = 0
+        for x in range(len(self.grafo)):
+            for y in range(len(self.grafo[x])):
+                if self.grafo[x][y] == 1:
+                    contadorAux+=1
+            if contadorAux > contadorNumeroCromatico:
+                contadorNumeroCromatico = contadorAux
+            contadorAux = 0
+        print("Numero cromatico: {}".format(contadorNumeroCromatico))
+        return contadorNumeroCromatico
+
+    def grauVerticesDecrescente(self):
+        listaGraus = []
+        for x in range(len(self.grafo)):
+            verticesGrau = 0
+            for y in range(len(self.grafo[x])):
+                if self.grafo[x][y] != 0:
+                    verticesGrau+=1
+                    if x == y:
+                        verticesGrau+=1
+            listaGraus.append(verticesGrau)
+        listaGraus = sorted(listaGraus, reverse=True)
+        print("Graus dos vertices decrescente: {}".format(listaGraus))
+        return listaGraus
+
+
+
+
+
 if __name__ == '__main__':
     grafo = Grafo(5, 5)
-    grafo.inserirAresta(4,0)
-    grafo.inserirAresta(0,2)
-    grafo.inserirAresta(1,2)
-    grafo.inserirAresta(2,3)
-    grafo.inserirAresta(3,3)
-    # grafo.checarAresta(1,9)
-    # grafo.mostrarGrafo()
-    # grafo.excluirAresta(1,9)
-    grafo.quantidadeVerticesIsolados()
+
+    grafo.inserirAresta(0, 1)
+    grafo.inserirAresta(1, 2)
+    grafo.inserirAresta(2, 2)
+
+    grafo.mostrarGrafo()
+
     grafo.quantidadeGraus()
     grafo.quantidadeLacos()
-    # grafo.mostrarGrafo()
-    # grafo.apagarGrafo()
-    grafo.mostrarGrafo()
-    grafo.imprimeComplemento()
+    grafo.quantidadeVerticesIsolados()
+
+    grafo.isEuleriano()
+    grafo.quantidadeVerticesDesconexo()
+    grafo.numeroCromatico()
+    grafo.grauVerticesDecrescente()
